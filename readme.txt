@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.20.1
+Stable tag: 1.22.0
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -47,6 +47,9 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.22.0 =
+* Actualizaciones automáticas: el plugin ya avisa solo cuando hay una versión nueva (Escritorio → Plugins, igual que cualquier plugin de la tienda oficial), leyendo los tags publicados en https://github.com/DevMB2026/plugin-distribuidor. No requiere acción de los sitios que lo tienen instalado — para publicar una versión nueva basta con subir el número de Version, hacer commit y empujar un tag `vX.Y.Z`.
 
 = 1.20.1 =
 * Cambiado: el panel Ajustes → Categorías del catálogo ahora muestra una fila por cada categoría YA FUSIONADA (la que el visitante realmente ve, ej. "Sudaderas") en vez de una fila por cada category_slug crudo de la API (ej. "Sudaderas", "Fleece", "Hoodie", "Cat"... por separado) — la fusión sigue siendo automática según la jerarquía real de la API, esto solo simplifica el panel para editar nombre/portada/orden/mostrar de la categoría final, sin la lista larga y repetida. Se quitó el campo "Grupo" (ya no hace falta, la fusión es automática).

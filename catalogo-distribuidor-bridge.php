@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Catálogo Distribuidor Bridge
  * Description:       Consume el catálogo de un distribuidor autenticado con su API Key (sin precios). Guarda una base de datos local que se sincroniza al instante vía webhook.
- * Version:           1.21.0
+ * Version:           1.22.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Prezenza
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Acceso directo no permitido.
 }
 
-define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_VERSION', '1.21.0' );
+define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_VERSION', '1.22.0' );
 define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_URL', plugin_dir_url( __FILE__ ) );
 
@@ -26,6 +26,22 @@ require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-settings.php';
 require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-rewrite.php';
 require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-shortcodes.php';
 require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-colors.php';
+
+// Actualizaciones automáticas: el plugin no está en WordPress.org (es de uso
+// interno/de negocio), así que usa la librería Plugin Update Checker para
+// avisar de versiones nuevas leyendo los tags del repo de GitHub — mismo
+// "Hay una actualización disponible" que un plugin normal, sin depender del
+// repositorio oficial. Para publicar una versión nueva: sube el número de
+// Version de arriba, haz commit, y crea+empuja un tag "vX.Y.Z" en GitHub.
+require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/plugin-update-checker/plugin-update-checker.php';
+
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+PucFactory::buildUpdateChecker(
+	'https://github.com/DevMB2026/plugin-distribuidor/',
+	__FILE__,
+	'catalogo-distribuidor-bridge'
+);
 
 register_activation_hook(
 	__FILE__,
