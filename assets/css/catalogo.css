@@ -1,0 +1,1378 @@
+.catalogo-dist-bridge-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 1.25rem;
+}
+
+/* Entrada suave de las tarjetas — un detalle sutil, no una animación vistosa.
+   Respeta prefers-reduced-motion (ver abajo) para quien lo tenga activado. */
+@keyframes catalogoDistBridgeFadeUp {
+	from { opacity: 0; transform: translateY(8px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+.catalogo-dist-bridge-grid .catalogo-dist-bridge-card {
+	animation: catalogoDistBridgeFadeUp 0.4s ease both;
+}
+
+.catalogo-dist-bridge-grid .catalogo-dist-bridge-card:nth-child(n+2) { animation-delay: 0.03s; }
+.catalogo-dist-bridge-grid .catalogo-dist-bridge-card:nth-child(n+3) { animation-delay: 0.06s; }
+.catalogo-dist-bridge-grid .catalogo-dist-bridge-card:nth-child(n+4) { animation-delay: 0.09s; }
+.catalogo-dist-bridge-grid .catalogo-dist-bridge-card:nth-child(n+5) { animation-delay: 0.12s; }
+.catalogo-dist-bridge-grid .catalogo-dist-bridge-card:nth-child(n+6) { animation-delay: 0.15s; }
+
+@media (prefers-reduced-motion: reduce) {
+	.catalogo-dist-bridge-grid .catalogo-dist-bridge-card,
+	.catalogo-dist-bridge-card,
+	.catalogo-dist-bridge-card-img img,
+	.cdb-mosaic-item img,
+	.cdb-mosaic-zoom,
+	.cdb-lightbox {
+		animation: none !important;
+		transition: none !important;
+	}
+}
+
+.catalogo-dist-bridge-card {
+	display: flex;
+	flex-direction: column;
+	/* Todas las tarjetas de una misma fila del grid ya se estiran parejo
+	   (comportamiento por defecto de CSS Grid) — height:100% lo deja
+	   explícito para no depender de que ningún estilo del tema lo cambie. */
+	height: 100%;
+	text-decoration: none;
+	color: inherit;
+	border-radius: 1rem;
+	overflow: hidden;
+	box-shadow: 0 0 0 1px #f0f0f1, 0 1px 2px rgba(0, 0, 0, 0.04);
+	background: #fff;
+	transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.catalogo-dist-bridge-card:hover {
+	box-shadow: 0 0 0 1px #e5e7eb, 0 10px 24px -8px rgba(17, 24, 39, 0.18);
+	transform: translateY(-2px);
+}
+
+.catalogo-dist-bridge-card-img {
+	position: relative;
+	aspect-ratio: 1 / 1;
+	background: #f9fafb;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+
+.catalogo-dist-bridge-card-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	box-sizing: border-box;
+	padding: 0.5rem;
+	transition: transform 0.3s ease;
+}
+
+.catalogo-dist-bridge-card:hover .catalogo-dist-bridge-card-img img {
+	transform: scale(1.04);
+}
+
+.catalogo-dist-bridge-no-img {
+	color: #9ca3af;
+	font-size: 0.85rem;
+}
+
+.catalogo-dist-bridge-card-body {
+	padding: 0.9rem 1rem 1rem;
+	display: flex;
+	flex-direction: column;
+	/* La imagen tiene tamaño fijo (aspect-ratio); el cuerpo se estira para
+	   llenar el resto de la tarjeta, y el CTA de abajo usa margin-top:auto
+	   para quedar siempre al mismo nivel sin importar cuánto texto tenga
+	   cada producto (composición/características de largo variable). */
+	flex: 1;
+}
+
+.catalogo-dist-bridge-card-brand {
+	font-size: 0.7rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: #4f46e5;
+	margin: 0 0 0.3rem;
+}
+
+.catalogo-dist-bridge-card-title {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: #111827;
+	line-height: 1.35;
+	margin: 0;
+}
+
+.catalogo-dist-bridge-card-categoria {
+	font-size: 0.8rem;
+	color: #9ca3af;
+	margin: 0.15rem 0 0;
+	/* Solo se ve en el estilo "lista" — en cuadrícula/compacta el nombre y la
+	   marca ya bastan, mostrar categoría ahí sería ruido. */
+	display: none;
+}
+
+/* ---------- Estilo: lista ---------- */
+/* Filas horizontales de ancho completo, con más info por producto — pensado
+   para distribuidores que prefieren ver marca/categoría de un vistazo antes
+   de entrar a la ficha. */
+
+.catalogo-dist-bridge-grid--lista {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.catalogo-dist-bridge-grid--lista .catalogo-dist-bridge-card {
+	flex-direction: row;
+	align-items: center;
+}
+
+.catalogo-dist-bridge-grid--lista .catalogo-dist-bridge-card-img {
+	width: 6.5rem;
+	min-width: 6.5rem;
+	aspect-ratio: 1 / 1;
+}
+
+.catalogo-dist-bridge-grid--lista .catalogo-dist-bridge-card-body {
+	padding: 0.75rem 1rem;
+}
+
+.catalogo-dist-bridge-grid--lista .catalogo-dist-bridge-card-title {
+	font-size: 1.05rem;
+}
+
+.catalogo-dist-bridge-grid--lista .catalogo-dist-bridge-card-categoria {
+	display: block;
+}
+
+/* ---------- Estilo: compacta ---------- */
+/* Grid más denso — más columnas, tarjetas chicas, solo imagen + nombre.
+   Pensado para catálogos grandes donde se quiere hojear rápido. */
+
+.catalogo-dist-bridge-grid--compacta {
+	grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+	gap: 0.75rem;
+}
+
+.catalogo-dist-bridge-grid--compacta .catalogo-dist-bridge-card-body {
+	padding: 0.5rem;
+}
+
+.catalogo-dist-bridge-grid--compacta .catalogo-dist-bridge-card-brand {
+	display: none;
+}
+
+.catalogo-dist-bridge-grid--compacta .catalogo-dist-bridge-card-title {
+	font-size: 0.8rem;
+}
+
+.catalogo-dist-bridge-empty,
+.catalogo-dist-bridge-error {
+	color: #6b7280;
+	font-size: 0.9rem;
+	padding: 1.5rem;
+	text-align: center;
+	background: #f9fafb;
+	border-radius: 1rem;
+	box-shadow: 0 0 0 1px #f0f0f1;
+}
+
+.catalogo-dist-bridge-detail-wrap {
+	max-width: 1360px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	/* Algunos temas envuelven el contenido de la página en su propio <main>
+	   con display:grid de N columnas (un grid system tipo Bootstrap), y un
+	   hijo sin grid-column explícito solo ocupa 1 columna por defecto — eso
+	   puede comprimir todo el detalle a unos pocos px de ancho.
+	   grid-column:1/-1 fuerza a ocupar TODAS las columnas del padre si
+	   resulta ser un grid; no tiene efecto si el padre no lo es. */
+	grid-column: 1 / -1;
+}
+
+.catalogo-dist-bridge-breadcrumb {
+	font-size: 0.85rem;
+	color: #9ca3af;
+	margin-bottom: 1.5rem;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.catalogo-dist-bridge-breadcrumb a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.catalogo-dist-bridge-breadcrumb a:hover {
+	color: #374151;
+}
+
+.catalogo-dist-bridge-breadcrumb > *:last-child {
+	color: #4b5563;
+}
+
+/* Botón "Regresar al catálogo" — primer elemento de la columna de info. */
+.cdb-back-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	align-self: flex-start;
+	margin-bottom: 1rem;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #4b5563;
+	text-decoration: none;
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 999px;
+	padding: 0.5rem 1rem;
+	transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.cdb-back-btn:hover {
+	border-color: #9ca3af;
+	color: #111827;
+}
+
+.catalogo-dist-bridge-detail {
+	display: grid;
+	/* La galería lleva casi 2/3 del ancho a propósito — como en un archivo de
+	   producto tipo WooCommerce, la foto es lo que vende, la columna de
+	   info no necesita competir por el mismo espacio. */
+	grid-template-columns: minmax(0, 1.6fr) minmax(300px, 380px);
+	gap: 2.5rem;
+	width: 100%;
+}
+
+/* Sin esto, algunos temas (grids/flex propios del theme envolviendo esta
+   página) hacen que una de las dos columnas se colapse a 0px de ancho: por
+   defecto un hijo de grid no se encoge más allá del tamaño de su contenido
+   (min-width: auto), y en layouts ajenos con poco espacio eso empuja a la
+   otra columna a 0. min-width: 0 fuerza a que sí se repartan 1fr y 1fr. */
+.catalogo-dist-bridge-detail-gallery,
+.catalogo-dist-bridge-detail-info {
+	min-width: 0;
+}
+
+@media (max-width: 900px) {
+	.catalogo-dist-bridge-detail {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ---------- Galería ---------- */
+
+.cdb-main-img {
+	position: relative;
+	aspect-ratio: 2 / 3;
+	background: #f9fafb;
+	border-radius: 1rem;
+	overflow: hidden;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+	border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.cdb-main-img-frame {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.cdb-main-img-el {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.cdb-main-img .catalogo-dist-bridge-no-img {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* Flechas prev/next y lupa de pantalla completa, sobre la imagen principal
+   — aparecen al pasar el mouse (siempre visibles en touch, donde no hay
+   hover). Se ocultan solas si el producto solo tiene 1 foto. */
+.cdb-gallery-arrow,
+.cdb-gallery-expand {
+	position: absolute;
+	z-index: 2;
+	border: none;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.85);
+	color: #111827;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 4px 12px -4px rgba(17, 24, 39, 0.35);
+	opacity: 0;
+	transition: opacity 0.2s ease, background 0.15s ease;
+}
+
+.cdb-main-img:hover .cdb-gallery-arrow,
+.cdb-main-img:hover .cdb-gallery-expand,
+.cdb-gallery-arrow:focus-visible,
+.cdb-gallery-expand:focus-visible {
+	opacity: 1;
+}
+
+.cdb-gallery-arrow:hover,
+.cdb-gallery-expand:hover {
+	background: #fff;
+}
+
+.cdb-gallery-arrow {
+	top: 50%;
+	width: 2.25rem;
+	height: 2.25rem;
+	transform: translateY(-50%);
+}
+
+.cdb-gallery-prev {
+	left: 0.75rem;
+}
+
+.cdb-gallery-next {
+	right: 0.75rem;
+}
+
+.cdb-gallery-expand {
+	left: 0.75rem;
+	bottom: 0.75rem;
+	width: 2.1rem;
+	height: 2.1rem;
+}
+
+@media (hover: none) {
+	.cdb-gallery-arrow,
+	.cdb-gallery-expand {
+		opacity: 1;
+		background: rgba(255, 255, 255, 0.92);
+	}
+}
+
+.cdb-main-col {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.cdb-gallery-dots {
+	display: flex;
+	justify-content: center;
+	gap: 0.45rem;
+	margin-top: 0.85rem;
+}
+
+/* Cuando la variante seleccionada tiene 1 sola foto (o ninguna), el
+   contenedor de puntos/miniaturas se queda vacío en vez de ocultarse con
+   display:none — así conserva el espacio que ya tenía reservado en el
+   layout y la imagen principal no cambia de tamaño/posición al cambiar de
+   color o variante. :empty solo lo oculta VISUALMENTE. */
+.cdb-gallery-dots:empty {
+	visibility: hidden;
+}
+
+.cdb-gallery-dot {
+	width: 0.5rem;
+	height: 0.5rem;
+	padding: 0;
+	border: none;
+	border-radius: 999px;
+	background: #d1d5db;
+	cursor: pointer;
+	transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.cdb-gallery-dot:hover {
+	background: #9ca3af;
+}
+
+.cdb-gallery-dot.active {
+	background: #4f46e5;
+	transform: scale(1.2);
+}
+
+.cdb-thumbs {
+	display: flex;
+	gap: 0.75rem;
+	margin-top: 1rem;
+	flex-wrap: wrap;
+}
+
+/* Mismo criterio que .cdb-gallery-dots:empty — nunca display:none, para no
+   perder el espacio reservado (ver comentario de esa regla). */
+.cdb-thumbs:empty {
+	visibility: hidden;
+}
+
+/* ---------- Galería: mosaico (layout por defecto) ---------- */
+/* Todas las fotos visibles a la vez en 2 columnas tipo mosaico/masonry (cada
+   una conserva su proporción natural, sin recortarla a un aspect-ratio fijo)
+   en vez de una imagen principal + tira de miniaturas — inspirado en
+   catálogos de mayoristas/uniformes donde se ve toda la prenda de un
+   vistazo. Un clic abre la foto a pantalla completa (lightbox). */
+
+.cdb-mosaic {
+	column-count: 2;
+	column-gap: 0.85rem;
+}
+
+.cdb-mosaic-item {
+	display: block;
+	width: 100%;
+	position: relative;
+	margin: 0 0 0.85rem;
+	padding: 0;
+	border: none;
+	border-radius: 1rem;
+	overflow: hidden;
+	background: #f9fafb;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+	cursor: zoom-in;
+	break-inside: avoid;
+}
+
+.cdb-mosaic-item img {
+	display: block;
+	width: 100%;
+	height: auto;
+	transition: transform 0.35s ease;
+}
+
+.cdb-mosaic-item:hover img {
+	transform: scale(1.035);
+}
+
+.cdb-mosaic-zoom {
+	position: absolute;
+	right: 0.6rem;
+	bottom: 0.6rem;
+	width: 2rem;
+	height: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: rgba(17, 24, 39, 0.55);
+	color: #fff;
+	backdrop-filter: blur(2px);
+	opacity: 0;
+	transform: translateY(4px);
+	transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.cdb-mosaic-item:hover .cdb-mosaic-zoom,
+.cdb-mosaic-item:focus-visible .cdb-mosaic-zoom {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+	.cdb-mosaic {
+		column-count: 1;
+	}
+}
+
+/* ---------- Lightbox ---------- */
+/* Overlay a pantalla completa para ver una foto del mosaico en grande. Se
+   controla con la clase .is-open (ver detail.js) en vez de [hidden] para
+   poder animar la entrada con opacity/transform. */
+
+.cdb-lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(17, 24, 39, 0.88);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease;
+	padding: 1.5rem;
+	box-sizing: border-box;
+}
+
+.cdb-lightbox.is-open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.cdb-lightbox-img {
+	max-width: min(90vw, 900px);
+	max-height: 85vh;
+	object-fit: contain;
+	border-radius: 0.75rem;
+	box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.5);
+	background: #fff;
+}
+
+.cdb-lightbox-close,
+.cdb-lightbox-nav {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.12);
+	color: #fff;
+	cursor: pointer;
+	transition: background 0.15s ease;
+}
+
+.cdb-lightbox-close:hover,
+.cdb-lightbox-nav:hover {
+	background: rgba(255, 255, 255, 0.24);
+}
+
+.cdb-lightbox-close {
+	top: 1.25rem;
+	right: 1.25rem;
+	width: 2.5rem;
+	height: 2.5rem;
+}
+
+.cdb-lightbox-nav {
+	top: 50%;
+	width: 3rem;
+	height: 3rem;
+	transform: translateY(-50%);
+}
+
+.cdb-lightbox-prev {
+	left: 1.25rem;
+}
+
+.cdb-lightbox-next {
+	right: 1.25rem;
+}
+
+.cdb-lightbox--single .cdb-lightbox-nav {
+	display: none;
+}
+
+@media (max-width: 600px) {
+	.cdb-lightbox-nav {
+		width: 2.5rem;
+		height: 2.5rem;
+	}
+	.cdb-lightbox-prev {
+		left: 0.5rem;
+	}
+	.cdb-lightbox-next {
+		right: 0.5rem;
+	}
+}
+
+/* ---------- Galería: miniaturas a la izquierda ---------- */
+/* Ajuste opcional (Ajustes → Catálogo Distribuidor) inspirado en el acomodo
+   típico de tiendas tipo Shein: tira vertical de miniaturas a la izquierda,
+   imagen principal a la derecha, en vez de miniaturas abajo. */
+
+.catalogo-dist-bridge-detail-gallery--izquierda {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+}
+
+.catalogo-dist-bridge-detail-gallery--izquierda .cdb-main-col {
+	flex: 1;
+	min-width: 0;
+}
+
+.catalogo-dist-bridge-detail-gallery--izquierda .cdb-thumbs {
+	order: -1;
+	/* flex-basis fijo (no "auto"): así el ancho de esta columna no depende
+	   de cuántas miniaturas haya adentro — incluso vacía (variante con 1
+	   sola foto) reserva el mismo espacio, y la imagen principal de al lado
+	   no cambia de tamaño/posición al cambiar de color o variante. */
+	flex: 0 0 6.5rem;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	margin-top: 0;
+	max-height: 36rem;
+	overflow-y: auto;
+	padding-right: 0.15rem;
+}
+
+.catalogo-dist-bridge-detail-gallery--izquierda .cdb-thumb {
+	flex-shrink: 0;
+}
+
+/* En pantallas angostas una tira vertical alta estorba más de lo que ayuda
+   — vuelve al acomodo horizontal de siempre, igual que el layout por
+   defecto ya colapsa a una sola columna en el mismo punto. */
+@media (max-width: 600px) {
+	.catalogo-dist-bridge-detail-gallery--izquierda {
+		flex-direction: column;
+	}
+	.catalogo-dist-bridge-detail-gallery--izquierda .cdb-thumbs {
+		order: 0;
+		flex-direction: row;
+		max-height: none;
+		overflow-y: visible;
+	}
+}
+
+.cdb-thumb {
+	width: 6rem;
+	height: 6rem;
+	border-radius: 0.85rem;
+	overflow: hidden;
+	padding: 0;
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	cursor: pointer;
+	transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cdb-thumb:hover {
+	border-color: #9ca3af;
+}
+
+.cdb-thumb.active {
+	border-color: #4f46e5;
+	box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.cdb-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+/* ---------- Info ---------- */
+
+.cdb-top-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.catalogo-dist-bridge-detail-brand {
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: #4f46e5;
+	margin: 0;
+}
+
+.cdb-badge-disponible {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: #047857;
+	background: #ecfdf5;
+	border: 1px solid #a7f3d0;
+	border-radius: 999px;
+	padding: 0.15rem 0.65rem;
+}
+
+.catalogo-dist-bridge-detail-title {
+	font-size: 1.75rem;
+	font-weight: 700;
+	color: #111827;
+	margin: 0.5rem 0 0;
+	line-height: 1.25;
+}
+
+.catalogo-dist-bridge-detail-meta {
+	color: #9ca3af;
+	font-size: 0.875rem;
+	margin: 0.4rem 0 0;
+}
+
+.cdb-sku-text {
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.cdb-whatsapp-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: 1rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: #fff;
+	background: #4c7a63;
+	border: none;
+	border-radius: 999px;
+	padding: 0.65rem 1.25rem;
+	text-decoration: none;
+	box-shadow: 0 4px 10px rgba(76, 122, 99, 0.3);
+	transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.cdb-whatsapp-btn svg {
+	flex-shrink: 0;
+}
+
+.cdb-whatsapp-btn:hover {
+	background: #3d6350;
+	color: #fff;
+	box-shadow: 0 6px 14px rgba(76, 122, 99, 0.4);
+	transform: translateY(-1px);
+}
+
+/* Sección de ancho completo, debajo de las dos columnas (galería + info) —
+   un texto largo se lee mejor así que apretado en la columna angosta de
+   info, y de paso evita que quede un hueco vacío si la galería termina
+   antes que el resto de la información. */
+.cdb-full-desc {
+	margin-top: 2.5rem;
+	padding-top: 1.75rem;
+	border-top: 1px solid #f3f4f6;
+}
+
+/* Layout clásico: la descripción va dentro de la columna de la galería
+   (debajo de la imagen), no en la sección de ancho completo — así llena
+   con contenido real el espacio que le sobra a esa columna cuando es más
+   corta que la de información, en vez de dejarlo vacío. */
+.cdb-gallery-desc {
+	margin-top: 1.5rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid #f3f4f6;
+}
+
+.catalogo-dist-bridge-detail-desc {
+	max-width: 860px;
+	color: #4b5563;
+	line-height: 1.7;
+	margin: 0;
+	text-align: justify;
+}
+
+.cdb-section {
+	margin-top: 1.75rem;
+}
+
+.cdb-section-head {
+	display: flex;
+	align-items: baseline;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+}
+
+.cdb-section-title {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: #111827;
+	margin: 0 0 0.75rem;
+}
+
+.cdb-section-head .cdb-section-title {
+	margin: 0;
+}
+
+.cdb-section-value {
+	font-size: 0.875rem;
+	color: #6b7280;
+}
+
+.cdb-pills {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+.cdb-pill {
+	min-width: 3rem;
+	padding: 0.5rem 1rem;
+	border-radius: 0.5rem;
+	border: 1px solid #d1d5db;
+	background: #fff;
+	color: #374151;
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.cdb-pill:hover {
+	border-color: #111827;
+}
+
+.cdb-pill.active {
+	border-color: #4f46e5;
+	background: #4f46e5;
+	color: #fff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.cdb-swatch {
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 999px;
+	padding: 0;
+	border: none;
+	box-shadow: 0 0 0 1px #d1d5db;
+	cursor: pointer;
+	flex-shrink: 0;
+	transition: box-shadow 0.15s;
+}
+
+.cdb-swatch:hover {
+	box-shadow: 0 0 0 1px #9ca3af;
+}
+
+.cdb-swatch.active {
+	box-shadow: 0 0 0 2px #fff, 0 0 0 4px #4f46e5;
+}
+
+.cdb-composicion-text {
+	color: #4b5563;
+	font-size: 0.875rem;
+	line-height: 1.7;
+	margin: 0;
+	text-align: justify;
+}
+
+.cdb-sku-line {
+	margin-top: 1.75rem;
+	padding-top: 1.25rem;
+	border-top: 1px solid #f3f4f6;
+}
+
+.cdb-sku-line span {
+	font-size: 0.75rem;
+	color: #9ca3af;
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.cdb-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.cdb-chip {
+	background: #eef2ff;
+	color: #4338ca;
+	border-radius: 999px;
+	padding: 0.25rem 0.75rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+}
+
+.cdb-features {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.25rem 1.5rem;
+	font-size: 0.875rem;
+	color: #374151;
+}
+
+.cdb-features li {
+	color: #10b981;
+}
+
+.cdb-attrs {
+	margin: 0;
+	border-radius: 0.75rem;
+	overflow: hidden;
+	box-shadow: 0 0 0 1px #f3f4f6;
+}
+
+.cdb-attr-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.6rem 1rem;
+	background: #fff;
+}
+
+.cdb-attr-row.alt {
+	background: #fafafa;
+}
+
+.cdb-attr-row dt {
+	color: #6b7280;
+	margin: 0;
+}
+
+.cdb-attr-row dd {
+	color: #111827;
+	font-weight: 500;
+	margin: 0;
+	text-align: right;
+}
+
+@media (max-width: 600px) {
+	.cdb-features {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ---------- Tabla de medidas / FAQ ---------- */
+
+.cdb-sizechart,
+.cdb-faq {
+	margin-top: 3rem;
+}
+
+.cdb-sizechart h2,
+.cdb-faq h2 {
+	font-size: 1.15rem;
+	font-weight: 600;
+	color: #111827;
+	margin: 0 0 0.75rem;
+}
+
+.cdb-sizechart h2 span {
+	font-size: 0.875rem;
+	font-weight: 400;
+	color: #9ca3af;
+}
+
+.cdb-table-scroll {
+	overflow-x: auto;
+	border-radius: 0.75rem;
+	box-shadow: 0 0 0 1px #e5e7eb;
+	-webkit-overflow-scrolling: touch;
+}
+
+.cdb-table-scroll table {
+	width: 100%;
+	min-width: max-content;
+	border-collapse: separate;
+	border-spacing: 0;
+	font-size: 0.875rem;
+	background: #fff;
+}
+
+.cdb-table-scroll th,
+.cdb-table-scroll td {
+	padding: 0.65rem 1.1rem;
+	white-space: nowrap;
+}
+
+.cdb-table-scroll thead th {
+	background: #f9fafb;
+	text-align: left;
+	font-weight: 600;
+	font-size: 0.75rem;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	color: #6b7280;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.cdb-table-scroll tbody td {
+	color: #374151;
+	border-bottom: 1px solid #f3f4f6;
+	font-variant-numeric: tabular-nums;
+}
+
+.cdb-table-scroll tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.cdb-table-scroll tbody tr:nth-child(even) td {
+	background: #fafafa;
+}
+
+/* La talla queda fija al hacer scroll horizontal (tallas grandes generan
+   muchas columnas) — así nunca se pierde de vista qué fila se está leyendo,
+   sobre todo en móvil. */
+.cdb-table-scroll th:first-child,
+.cdb-table-scroll td:first-child {
+	position: sticky;
+	left: 0;
+	z-index: 1;
+	box-shadow: 1px 0 0 #e5e7eb;
+}
+
+.cdb-table-scroll thead th:first-child {
+	background: #f3f4f6;
+	color: #111827;
+}
+
+.cdb-table-scroll tbody td:first-child {
+	background: #fff;
+	font-weight: 700;
+	color: #111827;
+}
+
+.cdb-table-scroll tbody tr:nth-child(even) td:first-child {
+	background: #fafafa;
+}
+
+@media (max-width: 480px) {
+	.cdb-table-scroll th,
+	.cdb-table-scroll td {
+		padding: 0.55rem 0.85rem;
+		font-size: 0.8125rem;
+	}
+}
+
+.cdb-faq-item {
+	background: #fff;
+	box-shadow: 0 0 0 1px #f3f4f6;
+	border-radius: 0.75rem;
+	padding: 1rem;
+	margin-bottom: 0.75rem;
+}
+
+.cdb-faq-q {
+	font-weight: 500;
+	color: #111827;
+	margin: 0;
+}
+
+.cdb-faq-a {
+	font-size: 0.875rem;
+	color: #4b5563;
+	margin: 0.35rem 0 0;
+	text-align: justify;
+}
+
+/* ============================================================
+   Categorías (botones grandes), layout con aside y tarjetas
+   más informativas — mismo espíritu que un archivo de tienda
+   con filtros (categorías + destacados), sin filtro de precio
+   porque este catálogo no maneja precios (ver readme del
+   plugin).
+   ============================================================ */
+
+/* ---------- Categorías: botones grandes ---------- */
+
+.cdb-cats-section {
+	margin-bottom: 2rem;
+}
+
+.cdb-cats-title {
+	font-size: 1.1rem;
+	font-weight: 700;
+	color: #111827;
+	margin: 0 0 1.1rem;
+	text-align: center;
+}
+
+.cdb-cats-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(110px, 130px));
+	justify-content: center;
+	gap: 1.1rem;
+}
+
+.cdb-cat-btn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.6rem;
+	text-decoration: none;
+	color: inherit;
+}
+
+.cdb-cat-btn-img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	border-radius: 999px;
+	overflow: hidden;
+	background: #f9fafb;
+	box-shadow: 0 0 0 1px #f0f0f1;
+	transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.cdb-cat-btn-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.cdb-cat-btn:hover .cdb-cat-btn-img,
+.cdb-cat-btn.active .cdb-cat-btn-img {
+	box-shadow: 0 0 0 2px #4f46e5;
+	transform: translateY(-2px);
+}
+
+.cdb-cat-btn-label {
+	font-size: 0.78rem;
+	font-weight: 600;
+	text-align: center;
+	color: #374151;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.cdb-cat-btn.active .cdb-cat-btn-label {
+	color: #4f46e5;
+}
+
+/* ---------- Layout: catálogo principal + aside ---------- */
+
+.cdb-catalog-layout {
+	display: grid;
+	grid-template-columns: 1fr 280px;
+	gap: 2.5rem;
+	align-items: start;
+}
+
+.cdb-catalog-main {
+	min-width: 0;
+}
+
+@media (max-width: 900px) {
+	.cdb-catalog-layout {
+		grid-template-columns: 1fr;
+	}
+}
+
+.cdb-catalog-sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 1.75rem;
+}
+
+.cdb-sidebar-block {
+	background: #fff;
+	border-radius: 1rem;
+	box-shadow: 0 0 0 1px #f0f0f1;
+	padding: 1.25rem;
+}
+
+.cdb-sidebar-title {
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: #111827;
+	margin: 0 0 0.9rem;
+}
+
+.cdb-cat-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.cdb-cat-list-link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 0.45rem 0;
+	text-decoration: none;
+	color: #4b5563;
+	font-size: 0.875rem;
+	border-bottom: 1px solid #f3f4f6;
+	transition: color 0.15s ease;
+}
+
+.cdb-cat-list li:last-child .cdb-cat-list-link {
+	border-bottom: none;
+}
+
+.cdb-cat-list-link:hover,
+.cdb-cat-list-link.active {
+	color: #4f46e5;
+}
+
+.cdb-cat-list-count {
+	font-size: 0.72rem;
+	color: #9ca3af;
+	background: #f3f4f6;
+	border-radius: 999px;
+	padding: 0.05rem 0.5rem;
+}
+
+.cdb-cat-list-link.active .cdb-cat-list-count {
+	color: #4f46e5;
+	background: #eef2ff;
+}
+
+.cdb-cat-list-clear {
+	display: inline-block;
+	font-size: 0.78rem;
+	color: #9ca3af;
+	text-decoration: underline;
+	margin-bottom: 0.6rem;
+}
+
+.cdb-cat-list-clear:hover {
+	color: #4f46e5;
+}
+
+.cdb-featured-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+}
+
+.cdb-featured-item {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	text-decoration: none;
+	color: inherit;
+}
+
+.cdb-featured-img {
+	width: 3rem;
+	height: 3rem;
+	min-width: 3rem;
+	border-radius: 0.6rem;
+	overflow: hidden;
+	background: #f9fafb;
+	box-shadow: 0 0 0 1px #f0f0f1;
+}
+
+.cdb-featured-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.cdb-featured-name {
+	font-size: 0.85rem;
+	font-weight: 500;
+	color: #374151;
+	line-height: 1.3;
+}
+
+.cdb-featured-item:hover .cdb-featured-name {
+	color: #4f46e5;
+}
+
+/* ---------- Tarjeta: badge de stock, composición, características, colores ---------- */
+
+.cdb-card-badge {
+	position: absolute;
+	left: 0.6rem;
+	top: 0.6rem;
+	background: #ecfdf5;
+	color: #047857;
+	border: 1px solid #a7f3d0;
+	border-radius: 999px;
+	font-size: 0.65rem;
+	font-weight: 600;
+	padding: 0.2rem 0.6rem;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.cdb-card-swatches {
+	display: flex;
+	gap: 0.4rem;
+	margin-top: 0.65rem;
+}
+
+.cdb-card-swatch {
+	width: 1.1rem;
+	height: 1.1rem;
+	border-radius: 999px;
+	box-shadow: 0 0 0 1px #d1d5db;
+}
+
+/* Cuando el producto tiene más de 6 colores, no se listan todos — se corta
+   en 6 y se avisa cuántos faltan (ej. "+4") en vez de saturar la tarjeta. */
+.cdb-card-swatch-more {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.1rem;
+	height: 1.1rem;
+	padding: 0 0.35rem;
+	border-radius: 999px;
+	background: #f3f4f6;
+	color: #6b7280;
+	font-size: 0.65rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.cdb-card-tallas {
+	font-size: 0.78rem;
+	color: #6b7280;
+	margin: 0.5rem 0 0;
+}
+
+.cdb-card-tallas strong {
+	color: #374151;
+}
+
+/* CTA "Ver producto": siempre al fondo de la tarjeta (ver flex-column +
+   flex:1 en .catalogo-dist-bridge-card-body), sin importar cuánto texto
+   tenga el producto arriba — así el botón queda al mismo nivel en toda
+   una fila del catálogo. */
+.cdb-card-cta {
+	margin-top: auto;
+	padding-top: 0.9rem;
+	border-top: 1px solid #f3f4f6;
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	text-align: center;
+	color: #4f46e5;
+	transition: color 0.15s ease;
+}
+
+.catalogo-dist-bridge-card:hover .cdb-card-cta {
+	color: #111827;
+}
+
+/* "compacta" existe justo para hojear rápido — estos detalles estorban ahí */
+.catalogo-dist-bridge-grid--compacta .cdb-card-badge,
+.catalogo-dist-bridge-grid--compacta .cdb-card-swatches,
+.catalogo-dist-bridge-grid--compacta .cdb-card-tallas,
+.catalogo-dist-bridge-grid--compacta .cdb-card-cta {
+	display: none;
+}
+
+/* "lista": filas horizontales, el CTA de bloque no encaja ahí */
+.catalogo-dist-bridge-grid--lista .cdb-card-cta {
+	display: none;
+}
+
+/* ---------- Productos relacionados (ficha de producto) ---------- */
+
+.cdb-related {
+	margin-top: 3rem;
+}
+
+.cdb-related h2 {
+	font-size: 1.15rem;
+	font-weight: 600;
+	color: #111827;
+	margin: 0 0 1.25rem;
+}
+
+.cdb-related-grid {
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
