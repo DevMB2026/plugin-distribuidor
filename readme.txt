@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.23.0
+Stable tag: 1.24.0
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -47,6 +47,9 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.24.0 =
+* Corregido: la tabla de medidas de la guía de tallas ponía cada talla en su propia fila — con productos de muchas tallas (XCH a 3XG) la tabla se hacía muy alta y quedaba con scroll horizontal corto dentro de la columna angosta de la ficha. Ahora la tabla se dibuja al revés (transpuesta): las tallas van en el encabezado, en columnas, y cada medida ("Largo talle", "Largo sisa / en diagonal"...) va en su propia fila — aprovecha mejor el ancho disponible y se lee más como una guía de tallas típica.
 
 = 1.23.0 =
 * Corregido: el catálogo del listado (shortcode `[catalogo_distribuidor]`) no tenía paginación — solo mostraba los primeros "limite" productos (12 por defecto, 100 como máximo posible) y el resto del catálogo asignado al distribuidor quedaba fuera de alcance para siempre, sin ninguna forma de llegar a esos productos desde el sitio. Ahora el listado agrega automáticamente controles "Anterior / Siguiente" (recarga de página con `?cdb_pagina=N`, sin JavaScript, mismo patrón que el filtro de categoría) en cuanto hay más de una página de resultados. "limite" pasa a controlar solo cuántos productos se ven por página, no un tope del catálogo — no requiere ninguna configuración por parte del distribuidor.

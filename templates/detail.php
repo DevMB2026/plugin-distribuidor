@@ -78,25 +78,35 @@ foreach ( $options as $o ) {
 }
 $sel_sexo = isset( $sexos[0] ) ? $sexos[0] : null;
 
-/** Pinta una sola tabla de medidas ($chart = ['unidad','columns','rows']) dentro de la guía de tallas. */
+/**
+ * Pinta una sola tabla de medidas ($chart = ['unidad','columns','rows'])
+ * dentro de la guía de tallas. TRANSPUESTA a propósito respecto a como llega
+ * el dato ($chart['rows'] trae una fila por talla): la columna de tallas
+ * (XCH, CH, M...) se puede volver larga (hasta 3XG y más), y esta tabla vive
+ * en una columna angosta de la ficha — puesta así, cada talla necesitaba su
+ * propia fila y la tabla se hacía muy alta con scroll horizontal corto. En
+ * fila (una talla por columna) aprovecha mejor el ancho disponible y se
+ * lee más como una guía de tallas típica.
+ */
 function cdb_render_size_table( $chart ) {
 	if ( empty( $chart['rows'] ) ) {
 		return;
 	}
+	$columns = (array) ( $chart['columns'] ?? array() );
 	?>
 	<div class="cdb-table-scroll">
 		<table>
 			<thead>
 				<tr>
 					<th>Talla</th>
-					<?php foreach ( (array) ( $chart['columns'] ?? array() ) as $c ) : ?><th><?php echo esc_html( $c ); ?></th><?php endforeach; ?>
+					<?php foreach ( $chart['rows'] as $row ) : ?><th><?php echo esc_html( $row['label'] ?? '' ); ?></th><?php endforeach; ?>
 				</tr>
 			</thead>
 			<tbody>
-				<?php foreach ( $chart['rows'] as $row ) : ?>
+				<?php foreach ( $columns as $ci => $c ) : ?>
 					<tr>
-						<td><strong><?php echo esc_html( $row['label'] ?? '' ); ?></strong></td>
-						<?php foreach ( (array) ( $chart['columns'] ?? array() ) as $ci => $c ) : ?>
+						<td><strong><?php echo esc_html( $c ); ?></strong></td>
+						<?php foreach ( $chart['rows'] as $row ) : ?>
 							<td><?php echo esc_html( $row['values'][ $ci ] ?? '—' ); ?></td>
 						<?php endforeach; ?>
 					</tr>
