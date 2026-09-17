@@ -27,7 +27,7 @@ $mostrar_filtro_categoria = empty( $categoria_fija_activa ) && count( $categoria
 			<h2 class="cdb-cats-title">Categorías</h2>
 			<div class="cdb-cats-row">
 				<?php foreach ( $categorias as $cat ) : ?>
-					<a class="cdb-cat-btn<?php echo ( $cat['slug'] === $categoria_actual ) ? ' active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'cdb_categoria', $cat['slug'] ) ); ?>">
+					<a class="cdb-cat-btn<?php echo ( $cat['slug'] === $categoria_actual ) ? ' active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'cdb_categoria', $cat['slug'], remove_query_arg( 'cdb_pagina' ) ) ); ?>">
 						<span class="cdb-cat-btn-img">
 							<?php if ( $cat['imagen'] ) : ?>
 								<img src="<?php echo esc_url( $cat['imagen'] ); ?>" alt="<?php echo esc_attr( $cat['nombre'] ); ?>" loading="lazy" />
@@ -52,6 +52,26 @@ $mostrar_filtro_categoria = empty( $categoria_fija_activa ) && count( $categoria
 						<?php include Catalogo_Distribuidor_Bridge_Templates::locate( 'product-card.php' ); ?>
 					<?php endforeach; ?>
 				</div>
+				<?php
+				// Paginación: sin esto, un catálogo con más productos que "limite"
+				// (por página) simplemente los dejaba fuera de alcance para
+				// siempre, sin forma de llegar a ellos desde el sitio. Mismo
+				// patrón sin JS que el filtro de categoría: recarga con
+				// ?cdb_pagina=N, conservando cualquier otro filtro ya activo en
+				// la URL.
+				$paginacion = isset( $result['pagination'] ) ? $result['pagination'] : null;
+				if ( $paginacion && (int) $paginacion['totalPages'] > 1 ) :
+					?>
+					<nav class="cdb-pagination" aria-label="Paginación del catálogo">
+						<?php if ( $paginacion['page'] > 1 ) : ?>
+							<a class="cdb-pagination-link cdb-pagination-prev" href="<?php echo esc_url( add_query_arg( 'cdb_pagina', $paginacion['page'] - 1 ) ); ?>">&larr; Anterior</a>
+						<?php endif; ?>
+						<span class="cdb-pagination-status">Página <?php echo (int) $paginacion['page']; ?> de <?php echo (int) $paginacion['totalPages']; ?></span>
+						<?php if ( $paginacion['page'] < $paginacion['totalPages'] ) : ?>
+							<a class="cdb-pagination-link cdb-pagination-next" href="<?php echo esc_url( add_query_arg( 'cdb_pagina', $paginacion['page'] + 1 ) ); ?>">Siguiente &rarr;</a>
+						<?php endif; ?>
+					</nav>
+				<?php endif; ?>
 			<?php endif; ?>
 		</div>
 
@@ -61,12 +81,12 @@ $mostrar_filtro_categoria = empty( $categoria_fija_activa ) && count( $categoria
 					<div class="cdb-sidebar-block">
 						<h3 class="cdb-sidebar-title">Categorías del producto</h3>
 						<?php if ( $categoria_actual ) : ?>
-							<a class="cdb-cat-list-clear" href="<?php echo esc_url( remove_query_arg( 'cdb_categoria' ) ); ?>">Quitar filtro</a>
+							<a class="cdb-cat-list-clear" href="<?php echo esc_url( remove_query_arg( array( 'cdb_categoria', 'cdb_pagina' ) ) ); ?>">Quitar filtro</a>
 						<?php endif; ?>
 						<ul class="cdb-cat-list">
 							<?php foreach ( $categorias as $cat ) : ?>
 								<li>
-									<a class="cdb-cat-list-link<?php echo ( $cat['slug'] === $categoria_actual ) ? ' active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'cdb_categoria', $cat['slug'] ) ); ?>">
+									<a class="cdb-cat-list-link<?php echo ( $cat['slug'] === $categoria_actual ) ? ' active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'cdb_categoria', $cat['slug'], remove_query_arg( 'cdb_pagina' ) ) ); ?>">
 										<span><?php echo esc_html( $cat['nombre'] ); ?></span>
 										<span class="cdb-cat-list-count"><?php echo (int) $cat['total']; ?></span>
 									</a>

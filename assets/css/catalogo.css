@@ -1142,6 +1142,37 @@
 	min-width: 0;
 }
 
+.cdb-pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1.25rem;
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid #f0f0f1;
+}
+
+.cdb-pagination-link {
+	display: inline-block;
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: #4f46e5;
+	text-decoration: none;
+	padding: 0.5rem 1rem;
+	border-radius: 999px;
+	background: #eef2ff;
+	transition: background 0.15s ease;
+}
+
+.cdb-pagination-link:hover {
+	background: #e0e7ff;
+}
+
+.cdb-pagination-status {
+	font-size: 0.82rem;
+	color: #6b7280;
+}
+
 @media (max-width: 900px) {
 	.cdb-catalog-layout {
 		grid-template-columns: 1fr;

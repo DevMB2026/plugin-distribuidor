@@ -45,10 +45,18 @@ class Catalogo_Distribuidor_Bridge_Shortcodes {
 			$categoria_actual = sanitize_title( wp_unslash( $_GET['cdb_categoria'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 
+		// Página actual del listado (?cdb_pagina=N), mismo patrón sin JS que el
+		// filtro de categoría. "limite" solo controla cuántos productos se ven
+		// POR PÁGINA — con esta paginación, ningún producto del catálogo
+		// asignado queda fuera de alcance sin importar cuántos tenga el
+		// distribuidor, sin que tenga que configurar nada.
+		$pagina_actual = isset( $_GET['cdb_pagina'] ) ? max( 1, (int) $_GET['cdb_pagina'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
 		$args = array(
 			'brand'    => sanitize_title( $atts['marca'] ),
 			'category' => $categoria_actual,
 			'limit'    => max( 1, min( 100, (int) $atts['limite'] ) ),
+			'page'     => $pagina_actual,
 		);
 
 		// Valor desconocido (typo del distribuidor, etc.) cae a "cuadricula"

@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Catálogo Distribuidor Bridge
  * Description:       Consume el catálogo de un distribuidor autenticado con su API Key (sin precios). Guarda una base de datos local que se sincroniza al instante vía webhook.
- * Version:           1.22.0
+ * Version:           1.23.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Prezenza
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Acceso directo no permitido.
 }
 
-define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_VERSION', '1.22.0' );
+define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_VERSION', '1.23.0' );
 define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_URL', plugin_dir_url( __FILE__ ) );
 
