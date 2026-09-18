@@ -16,6 +16,7 @@ $categoria  = Catalogo_Distribuidor_Bridge_Store::display_category_nombre(
 );
 $slug       = isset( $product['slug'] ) ? $product['slug'] : '';
 $disponible = ! empty( $product['activo'] );
+$badges     = ( ! empty( $product['badges'] ) && is_array( $product['badges'] ) ) ? $product['badges'] : array();
 
 $imagen = Catalogo_Distribuidor_Bridge_Store::main_image( $product );
 
@@ -65,6 +66,13 @@ $swatches_restantes = max( 0, count( $swatches ) - 6 );
 		<?php endif; ?>
 		<?php if ( $disponible ) : ?>
 			<span class="cdb-card-badge">Stock disponible</span>
+		<?php endif; ?>
+		<?php if ( $badges ) : ?>
+			<div class="cdb-card-tags">
+				<?php foreach ( $badges as $b ) : ?>
+					<span class="cdb-card-tag"><?php echo esc_html( $b['nombre'] ?? '' ); ?></span>
+				<?php endforeach; ?>
+			</div>
 		<?php endif; ?>
 	</div>
 	<div class="catalogo-dist-bridge-card-body">

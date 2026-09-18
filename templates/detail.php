@@ -58,6 +58,7 @@ $variants    = ( ! empty( $product['variants'] ) && is_array( $product['variants
 $applications = ( ! empty( $product['applications'] ) && is_array( $product['applications'] ) ) ? $product['applications'] : array();
 $features    = ( ! empty( $product['features'] ) && is_array( $product['features'] ) ) ? $product['features'] : array();
 $attributes  = ( ! empty( $product['attributes'] ) && is_array( $product['attributes'] ) ) ? $product['attributes'] : array();
+$badges      = ( ! empty( $product['badges'] ) && is_array( $product['badges'] ) ) ? $product['badges'] : array();
 // Tabla de medidas: si el producto combina hombre y mujer con cortes
 // distintos, puede traer una tabla POR género además de (u opcional en vez
 // de) la general — la ficha muestra la que corresponde al género
@@ -316,6 +317,9 @@ $js_data = array(
 			<div class="cdb-top-row">
 				<?php if ( $marca ) : ?><span class="catalogo-dist-bridge-detail-brand"><?php echo esc_html( strtoupper( $marca ) ); ?></span><?php endif; ?>
 				<span class="cdb-badge-disponible" style="<?php echo $disponible ? '' : 'display:none'; ?>">● Disponible</span>
+				<?php foreach ( $badges as $b ) : ?>
+					<span class="cdb-tag"><?php echo esc_html( $b['nombre'] ?? '' ); ?></span>
+				<?php endforeach; ?>
 			</div>
 
 			<h1 class="catalogo-dist-bridge-detail-title"><?php echo esc_html( $nombre ); ?></h1>
