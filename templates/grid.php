@@ -81,7 +81,7 @@ $mostrar_filtro_categoria = empty( $categoria_fija_activa ) && count( $categoria
 					<div class="cdb-sidebar-block">
 						<h3 class="cdb-sidebar-title">Categorías del producto</h3>
 						<?php if ( $categoria_actual ) : ?>
-							<a class="cdb-cat-list-clear" href="<?php echo esc_url( remove_query_arg( array( 'cdb_categoria', 'cdb_pagina' ) ) ); ?>">Quitar filtro</a>
+							<a class="cdb-cat-list-clear" href="<?php echo esc_url( ! empty( $categoria_inicial ) ? add_query_arg( 'cdb_categoria', 'todas', remove_query_arg( 'cdb_pagina' ) ) : remove_query_arg( array( 'cdb_categoria', 'cdb_pagina' ) ) ); ?>">Quitar filtro</a>
 						<?php endif; ?>
 						<ul class="cdb-cat-list">
 							<?php foreach ( $categorias as $cat ) : ?>

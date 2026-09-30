@@ -119,8 +119,49 @@ class Catalogo_Distribuidor_Bridge_Store {
 	}
 
 	/**
+	 * Atributo `orden` del shortcode ("shell, atractive, hydro") -> lista de
+	 * términos en formato slug, sin vacíos ni repetidos. Acepta también slugs
+	 * completos ("chamarra-shell") o varias palabras ("manga larga").
+	 */
+	public static function parse_orden( $raw ) {
+		$terms = array();
+		foreach ( explode( ',', (string) $raw ) as $part ) {
+			$slug = sanitize_title( $part );
+			if ( '' !== $slug && ! in_array( $slug, $terms, true ) ) {
+				$terms[] = $slug;
+			}
+		}
+		return array_slice( $terms, 0, 50 );
+	}
+
+	/**
+	 * Fragmento ORDER BY para el orden manual: los productos cuyo slug
+	 * contiene el término como palabra completa (entre guiones: "shell"
+	 * coincide con "chamarra-shell", "polo" NO con "apolo-x") van primero,
+	 * en el orden de la lista; si coinciden con varios, cuenta el primero.
+	 * Los que no coinciden con ninguno quedan al final, con el orden de
+	 * siempre (el ORDER BY que siga a este fragmento). Se hace en SQL — no
+	 * con usort sobre la página — para que la paginación respete el orden.
+	 *
+	 * @return array [ string $sql (vacío o "CASE ... END, "), array $vals ]
+	 */
+	private static function orden_sql( $terms, $alias = '' ) {
+		global $wpdb;
+		if ( empty( $terms ) ) {
+			return array( '', array() );
+		}
+		$cases = array();
+		$vals  = array();
+		foreach ( array_values( $terms ) as $i => $term ) {
+			$cases[] = "WHEN CONCAT('-', {$alias}slug, '-') LIKE %s THEN " . (int) $i;
+			$vals[]  = '%-' . $wpdb->esc_like( $term ) . '-%';
+		}
+		return array( 'CASE ' . implode( ' ', $cases ) . ' ELSE ' . count( $terms ) . ' END, ', $vals );
+	}
+
+	/**
 	 * Traduce el mismo $args que ya arma el shortcode (brand, category, q,
-	 * limit, page) a una consulta contra la tabla local. Devuelve la MISMA
+	 * limit, page, orden) a una consulta contra la tabla local. Devuelve la MISMA
 	 * forma normalizada que Catalogo_Distribuidor_Bridge_Client:
 	 * ['ok', 'status', 'data', 'pagination', 'message'].
 	 */
@@ -157,11 +198,13 @@ class Catalogo_Distribuidor_Bridge_Store {
 		$page   = isset( $args['page'] ) ? max( 1, (int) $args['page'] ) : 1;
 		$offset = ( $page - 1 ) * $limit;
 
+		list( $orden_sql, $orden_vals ) = self::orden_sql( isset( $args['orden'] ) ? $args['orden'] : array() );
+
 		$where_sql = implode( ' AND ', $where );
-		$sql       = "SELECT payload FROM {$table} WHERE {$where_sql} ORDER BY updated_at DESC LIMIT %d OFFSET %d";
+		$sql       = "SELECT payload FROM {$table} WHERE {$where_sql} ORDER BY {$orden_sql}updated_at DESC LIMIT %d OFFSET %d";
 		$count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$where_sql}";
 
-		$prepared_vals = array_merge( $vals, array( $limit, $offset ) );
+		$prepared_vals = array_merge( $vals, $orden_vals, array( $limit, $offset ) );
 		$rows          = $wpdb->get_col( $wpdb->prepare( $sql, $prepared_vals ) ); // phpcs:ignore
 		$total         = (int) $wpdb->get_var( $vals ? $wpdb->prepare( $count_sql, $vals ) : $count_sql ); // phpcs:ignore
 

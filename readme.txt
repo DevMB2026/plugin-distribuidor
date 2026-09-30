@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.25.0
+Stable tag: 1.26.0
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -22,7 +22,7 @@ La API Key nunca se envía al navegador del visitante — la llamada a la API oc
 1. Activa el plugin.
 2. Ve a Ajustes → Catálogo Distribuidor.
 3. Pega tu API Key (te la entrega el administrador del catálogo) y guarda.
-4. Usa el shortcode `[catalogo_distribuidor]` en cualquier página o entrada para mostrar tu catálogo. Admite los atributos `marca`, `categoria` y `limite`.
+4. Usa el shortcode `[catalogo_distribuidor]` en cualquier página o entrada para mostrar tu catálogo. Admite los atributos `marca`, `categoria`, `categoria_inicial`, `orden`, `limite` y `estilo`. `categoria` fija la categoría (el visitante no puede cambiarla); `categoria_inicial` solo es la que se ve al entrar (ej. `[catalogo_distribuidor categoria_inicial="chamarras"]`); `orden` pone primero ciertos productos y en ese orden (ej. `orden="shell, atractive, hydro, reaction"`).
 5. El detalle de cada producto se sirve automáticamente en `/catalogo-distribuidor/producto/{slug}/`.
 
 == Personalización: 3 niveles ==
@@ -47,6 +47,10 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.26.0 =
+* Nuevo atributo `categoria_inicial` en `[catalogo_distribuidor]`: la categoría que se ve al entrar al catálogo (ej. `categoria_inicial="chamarras"`), sin fijarla — el visitante puede cambiar a otra, y "Quitar filtro" lleva a `?cdb_categoria=todas` para ver todo.
+* Nuevo atributo `orden`: los productos cuyo slug contiene esas palabras salen primero, en el orden escrito (ej. `orden="shell, atractive, hydro, reaction"`); el resto va después con el orden de siempre. Se aplica en la consulta, así que la paginación lo respeta.
 
 = 1.25.0 =
 * "Productos relacionados" en la ficha: si la categoría del producto no tiene suficientes productos, se completan con los de su familia (el mismo grupo que usan los botones del catálogo, ej. todas las playeras). Antes, un producto único en su categoría se quedaba sin la sección.

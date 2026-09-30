@@ -27,6 +27,8 @@ class Catalogo_Distribuidor_Bridge_Shortcodes {
 			array(
 				'marca'     => '',
 				'categoria' => '',
+				'categoria_inicial' => '',
+				'orden'     => '',
 				'limite'    => 12,
 				'estilo'    => 'cuadricula',
 			),
@@ -39,10 +41,23 @@ class Catalogo_Distribuidor_Bridge_Shortcodes {
 		// botones/aside sin salir de la página (?cdb_categoria=slug) — un
 		// simple recargado con GET, sin JS, igual de espíritu que el resto del
 		// plugin (server-rendered).
-		$categoria_fija   = sanitize_title( $atts['categoria'] );
-		$categoria_actual = $categoria_fija;
-		if ( empty( $categoria_fija ) && ! empty( $_GET['cdb_categoria'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$categoria_actual = sanitize_title( wp_unslash( $_GET['cdb_categoria'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		//
+		// `categoria_inicial` (ej. "chamarras"): la que se ve AL ENTRAR, sin
+		// fijarla — el visitante puede cambiar a otra, y "Quitar filtro" lleva a
+		// ?cdb_categoria=todas para ver todo el catálogo (sin ese valor especial,
+		// quitar el filtro volvería a caer en la categoría inicial).
+		$categoria_fija    = sanitize_title( $atts['categoria'] );
+		$categoria_inicial = sanitize_title( $atts['categoria_inicial'] );
+		$categoria_actual  = $categoria_fija;
+		if ( empty( $categoria_fija ) ) {
+			$pedida = isset( $_GET['cdb_categoria'] ) ? sanitize_title( wp_unslash( $_GET['cdb_categoria'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( 'todas' === $pedida ) {
+				$categoria_actual = '';
+			} elseif ( '' !== $pedida ) {
+				$categoria_actual = $pedida;
+			} else {
+				$categoria_actual = $categoria_inicial;
+			}
 		}
 
 		// Página actual del listado (?cdb_pagina=N), mismo patrón sin JS que el
@@ -57,6 +72,10 @@ class Catalogo_Distribuidor_Bridge_Shortcodes {
 			'category' => $categoria_actual,
 			'limit'    => max( 1, min( 100, (int) $atts['limite'] ) ),
 			'page'     => $pagina_actual,
+			// Orden manual (ej. orden="shell, atractive, hydro, reaction"): esos
+			// productos primero y en ese orden, el resto después. Se aplica en la
+			// consulta, así que la paginación lo respeta.
+			'orden'    => Catalogo_Distribuidor_Bridge_Store::parse_orden( $atts['orden'] ),
 		);
 
 		// Valor desconocido (typo del distribuidor, etc.) cae a "cuadricula"
