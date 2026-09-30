@@ -384,8 +384,10 @@ $js_data = array(
 							$active = ( $val_id === $sel_val );
 							if ( $is_color ) :
 								$bg = Catalogo_Distribuidor_Bridge_Colors::swatch_background( $val['valor'] ?? '', $val['meta']['hex'] ?? null );
+								// Color marcado como nuevo en el panel (product.valoresNuevos): etiqueta "NEW".
+								$es_nuevo = in_array( (string) $val_id, array_map( 'strval', isset( $product['valoresNuevos'] ) ? (array) $product['valoresNuevos'] : array() ), true );
 								?>
-								<button type="button" class="cdb-swatch<?php echo $active ? ' active' : ''; ?>" title="<?php echo esc_attr( $val['valor'] ?? '' ); ?>" style="background:<?php echo esc_attr( $bg ); ?>" data-option="<?php echo esc_attr( $opt_id ); ?>" data-value="<?php echo esc_attr( $val_id ); ?>" data-label="<?php echo esc_attr( $val['valor'] ?? '' ); ?>"></button>
+								<button type="button" class="cdb-swatch<?php echo $active ? ' active' : ''; ?><?php echo $es_nuevo ? ' cdb-swatch--nuevo' : ''; ?>" title="<?php echo esc_attr( ( $val['valor'] ?? '' ) . ( $es_nuevo ? ' (nuevo)' : '' ) ); ?>" style="background:<?php echo esc_attr( $bg ); ?>" data-option="<?php echo esc_attr( $opt_id ); ?>" data-value="<?php echo esc_attr( $val_id ); ?>" data-label="<?php echo esc_attr( $val['valor'] ?? '' ); ?>"><?php if ( $es_nuevo ) : ?><span class="cdb-swatch-new" aria-label="Color nuevo">NEW</span><?php endif; ?></button>
 							<?php else : ?>
 								<button type="button" class="cdb-pill<?php echo $active ? ' active' : ''; ?>" data-option="<?php echo esc_attr( $opt_id ); ?>" data-value="<?php echo esc_attr( $val_id ); ?>" data-label="<?php echo esc_attr( $val['valor'] ?? '' ); ?>">
 									<?php echo esc_html( $val['valor'] ?? '' ); ?>

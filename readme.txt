@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.27.0
+Stable tag: 1.28.0
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -47,6 +47,9 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.28.0 =
+* Etiqueta "NEW" sobre los colores marcados como nuevos en el panel de administración (Colores visibles y nuevos). Requiere la API con el campo `valoresNuevos`; sin él, no se muestra nada.
 
 = 1.27.0 =
 * Galería de la ficha: al elegir un color se muestran SOLO sus fotos. Antes se mezclaban con las de la galería general (fotos sin color), y al elegir Azul salía también una foto gris. La galería general se usa solo si el color no tiene fotos propias (misma regla que el panel de administración).
