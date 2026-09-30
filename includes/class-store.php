@@ -139,6 +139,10 @@ class Catalogo_Distribuidor_Bridge_Store {
 	 * contiene el término como palabra completa (entre guiones: "shell"
 	 * coincide con "chamarra-shell", "polo" NO con "apolo-x") van primero,
 	 * en el orden de la lista; si coinciden con varios, cuenta el primero.
+	 * Excepción: si el término ES el slug completo de un producto, esa
+	 * coincidencia exacta gana sobre cualquier parcial — así
+	 * "camisa-pescadora, …, camisa-pescadora-con-reflejantes" deja la de
+	 * reflejantes en su propio lugar en vez de pegada a "camisa-pescadora".
 	 * Los que no coinciden con ninguno quedan al final, con el orden de
 	 * siempre (el ORDER BY que siga a este fragmento). Se hace en SQL — no
 	 * con usort sobre la página — para que la paginación respete el orden.
@@ -152,7 +156,12 @@ class Catalogo_Distribuidor_Bridge_Store {
 		}
 		$cases = array();
 		$vals  = array();
-		foreach ( array_values( $terms ) as $i => $term ) {
+		$terms = array_values( $terms );
+		foreach ( $terms as $i => $term ) {
+			$cases[] = "WHEN {$alias}slug = %s THEN " . (int) $i;
+			$vals[]  = $term;
+		}
+		foreach ( $terms as $i => $term ) {
 			$cases[] = "WHEN CONCAT('-', {$alias}slug, '-') LIKE %s THEN " . (int) $i;
 			$vals[]  = '%-' . $wpdb->esc_like( $term ) . '-%';
 		}

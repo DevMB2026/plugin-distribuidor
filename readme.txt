@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.26.0
+Stable tag: 1.26.1
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -47,6 +47,9 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.26.1 =
+* `orden`: si escribes el slug completo de un producto, esa coincidencia exacta gana sobre las parciales. Ej. en `orden="camisa-pescadora, …, camisa-pescadora-con-reflejantes"` la de reflejantes queda en su propio lugar en vez de salir pegada a `camisa-pescadora`.
 
 = 1.26.0 =
 * Nuevo atributo `categoria_inicial` en `[catalogo_distribuidor]`: la categoría que se ve al entrar al catálogo (ej. `categoria_inicial="chamarras"`), sin fijarla — el visitante puede cambiar a otra, y "Quitar filtro" lleva a `?cdb_categoria=todas` para ver todo.
