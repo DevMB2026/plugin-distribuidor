@@ -559,21 +559,43 @@ class Catalogo_Distribuidor_Bridge_Store {
 		);
 	}
 
-	/** Otros productos activos de la misma categoría — para "Productos relacionados" en la ficha de producto. */
+	/**
+	 * "Productos relacionados" de la ficha: primero otros productos activos
+	 * de la MISMA categoría; si no alcanzan, se completan con los de su
+	 * familia (el mismo grupo que usan los botones del catálogo, ver
+	 * group_key_for()) — ej. la Polo manga corta es la única de su
+	 * categoría, así que se completan con Polo manga larga, Cotton, Cuello
+	 * redondo… (todas bajo "Playeras"). Sin esto la sección no salía.
+	 */
 	public static function get_related( $category_slug, $exclude_id, $limit = 4 ) {
 		global $wpdb;
 		if ( empty( $category_slug ) ) {
 			return array();
 		}
 		$table = self::table();
+		$limit = max( 1, (int) $limit );
 		$rows  = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT payload FROM {$table} WHERE activo = 1 AND category_slug = %s AND product_id != %s ORDER BY updated_at DESC LIMIT %d",
 				$category_slug,
 				(string) $exclude_id,
-				max( 1, (int) $limit )
+				$limit
 			)
 		);
+
+		$faltan  = $limit - count( $rows );
+		$familia = array_values( array_diff( self::raw_slugs_for_filter( self::group_key_for( $category_slug ) ), array( $category_slug ) ) );
+		if ( $faltan > 0 && $familia ) {
+			$rows = array_merge(
+				$rows,
+				$wpdb->get_col(
+					$wpdb->prepare(
+						"SELECT payload FROM {$table} WHERE activo = 1 AND product_id != %s AND category_slug IN (" . implode( ',', array_fill( 0, count( $familia ), '%s' ) ) . ') ORDER BY updated_at DESC LIMIT %d',
+						array_merge( array( (string) $exclude_id ), $familia, array( $faltan ) )
+					)
+				)
+			);
+		}
 		return array_map(
 			function ( $json ) {
 				return json_decode( $json, true );

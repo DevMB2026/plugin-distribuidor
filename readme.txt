@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.24.0
+Stable tag: 1.25.0
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -47,6 +47,9 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.25.0 =
+* "Productos relacionados" en la ficha: si la categoría del producto no tiene suficientes productos, se completan con los de su familia (el mismo grupo que usan los botones del catálogo, ej. todas las playeras). Antes, un producto único en su categoría se quedaba sin la sección.
 
 = 1.24.0 =
 * Corregido: la tabla de medidas de la guía de tallas ponía cada talla en su propia fila — con productos de muchas tallas (XCH a 3XG) la tabla se hacía muy alta y quedaba con scroll horizontal corto dentro de la columna angosta de la ficha. Ahora la tabla se dibuja al revés (transpuesta): las tallas van en el encabezado, en columnas, y cada medida ("Largo talle", "Largo sisa / en diagonal"...) va en su propia fila — aprovecha mejor el ancho disponible y se lee más como una guía de tallas típica.
