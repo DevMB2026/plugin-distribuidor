@@ -189,9 +189,15 @@ function cdb_filter_color( $imgs, $color_value_id ) {
 		return $imgs;
 	}
 	$propias   = array_values( array_filter( $imgs, function ( $m ) use ( $color_value_id ) { return isset( $m['optionValue'] ) && $m['optionValue'] === $color_value_id; } ) );
+	// Si el color tiene fotos propias, SOLO esas: la galería general (fotos
+	// sin color) no se mezcla — si no, al elegir Azul salía también la foto
+	// gris sin color asignado. Sin fotos propias, se usa la galería general
+	// (misma regla que el panel admin y la ficha de la API).
+	if ( $propias ) {
+		return $propias;
+	}
 	$genericas = array_values( array_filter( $imgs, function ( $m ) { return empty( $m['optionValue'] ); } ) );
-	$out       = array_merge( $propias, $genericas );
-	return $out ? $out : $imgs;
+	return $genericas ? $genericas : $imgs;
 }
 
 // Las variantes de esta API casi nunca traen su propio "media" — cuando sí

@@ -63,9 +63,11 @@
 	function filterColor(imgs, colorValueId) {
 		if (!colorValueId) return imgs;
 		var propias = imgs.filter(function (m) { return m.optionValue === colorValueId; });
+		// Si el color tiene fotos propias, SOLO esas; la galería general (sin
+		// color) solo cuando el color no tiene ninguna. Misma regla que en PHP.
+		if (propias.length) return propias;
 		var genericas = imgs.filter(function (m) { return !m.optionValue; });
-		var out = propias.concat(genericas);
-		return out.length ? out : imgs;
+		return genericas.length ? genericas : imgs;
 	}
 
 	function init(article) {
