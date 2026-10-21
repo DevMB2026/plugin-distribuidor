@@ -20,6 +20,33 @@ $categoria_fija_activa = isset( $categoria_fija_activa ) ? $categoria_fija_activ
 // si el dueño de la página no fijó ya una categoría en el shortcode, y si
 // hay más de una entre las que elegir — con una sola no hay nada que filtrar.
 $mostrar_filtro_categoria = empty( $categoria_fija_activa ) && count( $categorias ) > 1;
+
+// Otras marcas de la empresa: van al final de la fila de categorías con el
+// mismo aspecto, pero son enlaces externos, no filtros. El logo se busca en
+// assets/img/marcas/<slug>.(webp|png|jpg|svg); sin archivo el círculo queda
+// vacío, igual que una categoría sin portada.
+$marcas_extra = array(
+	array(
+		'slug'   => 'be-fresh',
+		'nombre' => 'Be Fresh',
+		'url'    => 'https://fitbefresh.com',
+	),
+	array(
+		'slug'   => 'be-fresh-security',
+		'nombre' => 'Be Fresh Security',
+		'url'    => 'https://befreshsecurity.com',
+	),
+);
+foreach ( $marcas_extra as $i => $marca ) {
+	$marcas_extra[ $i ]['imagen'] = '';
+	foreach ( array( 'webp', 'png', 'jpg', 'svg' ) as $ext ) {
+		$archivo = 'assets/img/marcas/' . $marca['slug'] . '.' . $ext;
+		if ( file_exists( CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . $archivo ) ) {
+			$marcas_extra[ $i ]['imagen'] = CATALOGO_DISTRIBUIDOR_BRIDGE_URL . $archivo;
+			break;
+		}
+	}
+}
 ?>
 <div class="catalogo-dist-bridge-grid-wrap">
 	<?php if ( $mostrar_filtro_categoria ) : ?>
@@ -34,6 +61,16 @@ $mostrar_filtro_categoria = empty( $categoria_fija_activa ) && count( $categoria
 							<?php endif; ?>
 						</span>
 						<span class="cdb-cat-btn-label"><?php echo esc_html( $cat['nombre'] ); ?></span>
+					</a>
+				<?php endforeach; ?>
+				<?php foreach ( $marcas_extra as $marca ) : ?>
+					<a class="cdb-cat-btn cdb-marca-extra" href="<?php echo esc_url( $marca['url'] ); ?>" target="_blank" rel="noopener">
+						<span class="cdb-cat-btn-img">
+							<?php if ( $marca['imagen'] ) : ?>
+								<img src="<?php echo esc_url( $marca['imagen'] ); ?>" alt="<?php echo esc_attr( $marca['nombre'] ); ?>" loading="lazy" />
+							<?php endif; ?>
+						</span>
+						<span class="cdb-cat-btn-label"><?php echo esc_html( $marca['nombre'] ); ?></span>
 					</a>
 				<?php endforeach; ?>
 			</div>
