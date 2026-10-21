@@ -1140,7 +1140,8 @@
 	transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.cdb-cat-btn-img img {
+.cdb-cat-btn-img img,
+.cdb-cat-btn-img video {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;

@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.29.0
+Stable tag: 1.30.0
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -47,6 +47,9 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.30.0 =
+* Nuevo bloque en Ajustes → "Otras marcas / enlaces": los círculos de Be Fresh y Be Fresh Security (y los que quieras agregar) ahora se administran desde el panel — nombre, enlace, imagen, video corto opcional (se reproduce solo, en bucle y sin sonido dentro del círculo), orden de las filas, mostrar/ocultar y borrar. Reemplaza la lista fija de la 1.29.0 (que ya no busca logos en `assets/img/marcas/`); mientras no guardes el bloque siguen saliendo las dos marcas de siempre, y guardarlo sin filas las quita todas.
 
 = 1.29.0 =
 * Dos círculos más al final de la fila de Categorías con enlaces a las otras marcas de la empresa: Be Fresh (fitbefresh.com) y Be Fresh Security (befreshsecurity.com). Se ven igual que las categorías, abren en pestaña nueva y llevan la clase extra `cdb-marca-extra`. El logo se toma de `assets/img/marcas/be-fresh.(webp|png|jpg|svg)` y `assets/img/marcas/be-fresh-security.(...)`.

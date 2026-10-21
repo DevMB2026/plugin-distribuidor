@@ -26,6 +26,7 @@ class Catalogo_Distribuidor_Bridge_Settings {
 		add_action( 'admin_notices', array( __CLASS__, 'maybe_notice_key_missing' ) );
 		add_action( 'admin_post_catalogo_dist_sync_now', array( __CLASS__, 'handle_sync_now' ) );
 		add_action( 'admin_post_catalogo_dist_save_categories', array( __CLASS__, 'handle_save_categories' ) );
+		add_action( 'admin_post_catalogo_dist_save_marcas', array( __CLASS__, 'handle_save_marcas' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_media' ) );
 	}
 
@@ -519,6 +520,230 @@ class Catalogo_Distribuidor_Bridge_Settings {
 		<?php
 	}
 
+	const OPTION_MARCAS = 'catalogo_distribuidor_marcas_extra';
+
+	/**
+	 * Enlaces a otras marcas/sitios que salen como círculos al final de la fila
+	 * de categorías (no son categorías: abren el enlace en pestaña nueva).
+	 * Mientras nadie guarde el bloque, se usan las dos marcas de la empresa
+	 * por defecto; guardarlo con la lista vacía las quita todas.
+	 *
+	 * @param bool $solo_visibles Si true, descarta las desmarcadas y las incompletas (nombre o URL vacíos).
+	 * @return array Lista de ['nombre','url','imagen','video','mostrar'].
+	 */
+	public static function get_marcas_extra( $solo_visibles = false ) {
+		$marcas = get_option( self::OPTION_MARCAS, null );
+		if ( ! is_array( $marcas ) ) {
+			$marcas = array(
+				array(
+					'nombre'  => 'Be Fresh',
+					'url'     => 'https://fitbefresh.com',
+					'imagen'  => '',
+					'video'   => '',
+					'mostrar' => true,
+				),
+				array(
+					'nombre'  => 'Be Fresh Security',
+					'url'     => 'https://befreshsecurity.com',
+					'imagen'  => '',
+					'video'   => '',
+					'mostrar' => true,
+				),
+			);
+		}
+		if ( $solo_visibles ) {
+			$marcas = array_values(
+				array_filter(
+					$marcas,
+					function ( $m ) {
+						return ! empty( $m['mostrar'] ) && ! empty( $m['nombre'] ) && ! empty( $m['url'] );
+					}
+				)
+			);
+		}
+		return $marcas;
+	}
+
+	public static function handle_save_marcas() {
+		if ( ! current_user_can( 'manage_options' ) || ! check_admin_referer( 'catalogo_dist_save_marcas' ) ) {
+			wp_die( 'No autorizado.' );
+		}
+
+		$enviadas = isset( $_POST['cdb_marca'] ) && is_array( $_POST['cdb_marca'] ) ? wp_unslash( $_POST['cdb_marca'] ) : array();
+		$marcas   = array();
+		foreach ( $enviadas as $fila ) {
+			if ( ! is_array( $fila ) ) {
+				continue;
+			}
+			$nombre = isset( $fila['nombre'] ) ? sanitize_text_field( $fila['nombre'] ) : '';
+			$url    = isset( $fila['url'] ) ? esc_url_raw( trim( $fila['url'] ) ) : '';
+			if ( '' === $nombre && '' === $url ) {
+				continue; // Fila en blanco: no guardarla.
+			}
+			$marcas[] = array(
+				'nombre'  => $nombre,
+				'url'     => $url,
+				'imagen'  => isset( $fila['imagen'] ) ? esc_url_raw( $fila['imagen'] ) : '',
+				'video'   => isset( $fila['video'] ) ? esc_url_raw( $fila['video'] ) : '',
+				'mostrar' => ! empty( $fila['mostrar'] ),
+			);
+		}
+
+		update_option( self::OPTION_MARCAS, $marcas );
+		wp_safe_redirect( add_query_arg( 'catalogo_dist_marcas_saved', '1', admin_url( 'options-general.php?page=' . self::PAGE_SLUG ) ) );
+		exit;
+	}
+
+	/**
+	 * Bloque "Otras marcas / enlaces": una fila por círculo, con nombre, URL,
+	 * imagen y (opcional) video corto. Si hay video, el círculo lo reproduce
+	 * en bucle y sin sonido, con la imagen como respaldo.
+	 */
+	public static function render_marcas_block() {
+		$marcas = self::get_marcas_extra();
+		?>
+		<hr style="margin: 2rem 0;" />
+		<h2>Otras marcas / enlaces</h2>
+		<?php if ( isset( $_GET['catalogo_dist_marcas_saved'] ) ) : ?>
+			<p style="color:#2271b1;"><strong>Enlaces actualizados.</strong></p>
+		<?php endif; ?>
+		<p class="description">
+			Círculos que aparecen al final de la fila de <strong>Categorías</strong>, con el mismo aspecto, pero que no
+			filtran el catálogo: abren el enlace en una pestaña nueva. Cada uno puede llevar una <strong>imagen</strong> y,
+			si quieres, un <strong>video corto</strong> (se reproduce solo, en bucle y sin sonido, dentro del círculo; la
+			imagen se usa mientras carga). Desmarca <strong>Mostrar</strong> para ocultar uno sin borrarlo, o quita todas
+			las filas para no mostrar ninguno. Solo se ven cuando la fila de categorías está visible.
+		</p>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<input type="hidden" name="action" value="catalogo_dist_save_marcas" />
+			<?php wp_nonce_field( 'catalogo_dist_save_marcas' ); ?>
+			<table class="widefat" style="max-width: 1100px;" id="cdb-marcas-tabla">
+				<thead>
+					<tr>
+						<th style="width:70px;">Mostrar</th>
+						<th style="width:90px;">Imagen</th>
+						<th style="width:200px;">Video (opcional)</th>
+						<th>Nombre y enlace</th>
+						<th style="width:80px;"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ( $marcas as $i => $m ) : ?>
+						<?php self::render_marca_row( (string) $i, $m ); ?>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+			<p><button type="button" class="button" id="cdb-marca-agregar">+ Agregar enlace</button></p>
+			<?php submit_button( 'Guardar enlaces' ); ?>
+		</form>
+		<template id="cdb-marca-plantilla">
+			<?php
+			self::render_marca_row(
+				'__I__',
+				array(
+					'nombre'  => '',
+					'url'     => '',
+					'imagen'  => '',
+					'video'   => '',
+					'mostrar' => true,
+				)
+			);
+			?>
+		</template>
+		<script>
+		( function () {
+			var tbody    = document.querySelector( '#cdb-marcas-tabla tbody' );
+			var plantilla = document.getElementById( 'cdb-marca-plantilla' );
+			var siguiente = tbody.querySelectorAll( 'tr' ).length + 1000;
+
+			document.getElementById( 'cdb-marca-agregar' ).addEventListener( 'click', function () {
+				var html = plantilla.innerHTML.replace( /__I__/g, siguiente++ );
+				tbody.insertAdjacentHTML( 'beforeend', html );
+			} );
+
+			// Delegado: sirve igual para filas existentes y recién agregadas.
+			tbody.addEventListener( 'click', function ( e ) {
+				var btn = e.target.closest( 'button' );
+				if ( ! btn ) {
+					return;
+				}
+				var fila = btn.closest( 'tr' );
+				if ( btn.classList.contains( 'cdb-marca-borrar' ) ) {
+					fila.remove();
+					return;
+				}
+				var tipo = btn.getAttribute( 'data-tipo' ); // 'imagen' | 'video'
+				if ( ! tipo ) {
+					return;
+				}
+				var celda   = btn.closest( 'td' );
+				var input   = celda.querySelector( '.cdb-marca-' + tipo + '-input' );
+				var estado  = celda.querySelector( '.cdb-marca-' + tipo + '-estado' );
+				var quitar  = celda.querySelector( '.cdb-marca-quitar[data-tipo="' + tipo + '"]' );
+				if ( btn.classList.contains( 'cdb-marca-quitar' ) ) {
+					input.value = '';
+					estado.innerHTML = '';
+					btn.style.display = 'none';
+					return;
+				}
+				var frame = wp.media( { title: tipo === 'video' ? 'Elegir video' : 'Elegir imagen', multiple: false, library: { type: tipo } } );
+				frame.on( 'select', function () {
+					var adj = frame.state().get( 'selection' ).first().toJSON();
+					var url = ( tipo === 'imagen' && adj.sizes && adj.sizes.medium ) ? adj.sizes.medium.url : adj.url;
+					input.value = url;
+					if ( tipo === 'imagen' ) {
+						estado.innerHTML = '<img src="' + url + '" style="width:100%; height:100%; object-fit:cover;" alt="" />';
+					} else {
+						estado.textContent = url.split( '/' ).pop();
+					}
+					quitar.style.display = '';
+				} );
+				frame.open();
+			} );
+		} )();
+		</script>
+		<?php
+	}
+
+	private static function render_marca_row( $i, $m ) {
+		$i      = esc_attr( $i );
+		$imagen = ! empty( $m['imagen'] ) ? $m['imagen'] : '';
+		$video  = ! empty( $m['video'] ) ? $m['video'] : '';
+		?>
+		<tr>
+			<td>
+				<input type="checkbox" name="cdb_marca[<?php echo $i; ?>][mostrar]" value="1" <?php checked( ! empty( $m['mostrar'] ) ); ?> />
+			</td>
+			<td>
+				<div class="cdb-marca-imagen-estado" style="width:64px; height:64px; border-radius:50%; overflow:hidden; background:#f0f0f1; border:1px solid #dcdcde;">
+					<?php if ( $imagen ) : ?>
+						<img src="<?php echo esc_url( $imagen ); ?>" style="width:100%; height:100%; object-fit:cover;" alt="" />
+					<?php endif; ?>
+				</div>
+				<input type="hidden" class="cdb-marca-imagen-input" name="cdb_marca[<?php echo $i; ?>][imagen]" value="<?php echo esc_attr( $imagen ); ?>" />
+				<p style="margin:0.4rem 0 0;">
+					<button type="button" class="button button-small" data-tipo="imagen">Elegir</button>
+					<button type="button" class="button-link cdb-marca-quitar" data-tipo="imagen" style="<?php echo $imagen ? '' : 'display:none'; ?>">Quitar</button>
+				</p>
+			</td>
+			<td>
+				<div class="cdb-marca-video-estado description"><?php echo $video ? esc_html( wp_basename( $video ) ) : ''; ?></div>
+				<input type="hidden" class="cdb-marca-video-input" name="cdb_marca[<?php echo $i; ?>][video]" value="<?php echo esc_attr( $video ); ?>" />
+				<p style="margin:0.4rem 0 0;">
+					<button type="button" class="button button-small" data-tipo="video">Elegir video</button>
+					<button type="button" class="button-link cdb-marca-quitar" data-tipo="video" style="<?php echo $video ? '' : 'display:none'; ?>">Quitar</button>
+				</p>
+			</td>
+			<td>
+				<input type="text" name="cdb_marca[<?php echo $i; ?>][nombre]" value="<?php echo esc_attr( $m['nombre'] ); ?>" class="regular-text" placeholder="Nombre (ej. Be Fresh)" />
+				<br />
+				<input type="url" name="cdb_marca[<?php echo $i; ?>][url]" value="<?php echo esc_attr( $m['url'] ); ?>" class="regular-text" style="margin-top:4px;" placeholder="https://..." />
+			</td>
+			<td><button type="button" class="button-link-delete cdb-marca-borrar" style="color:#b32d2e;">Borrar</button></td>
+		</tr>
+		<?php
+	}
+
 	public static function render_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
@@ -535,6 +760,7 @@ class Catalogo_Distribuidor_Bridge_Settings {
 				?>
 			</form>
 			<?php self::render_categories_block(); ?>
+			<?php self::render_marcas_block(); ?>
 			<?php self::render_sync_status_block(); ?>
 			<p>
 				Usa el shortcode <code>[catalogo_distribuidor]</code> en cualquier página o entrada para mostrar tu catálogo.
