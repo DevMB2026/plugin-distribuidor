@@ -1294,6 +1294,33 @@
 	color: #4f46e5;
 }
 
+.cdb-search-notice {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.5rem 1rem;
+	margin-bottom: 1.25rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid #e5e7eb;
+	font-size: 0.95rem;
+	color: #4b5563;
+}
+
+.cdb-search-notice strong {
+	color: #111827;
+}
+
+.cdb-search-clear {
+	font-size: 0.8rem;
+	color: #9ca3af;
+	text-decoration: underline;
+}
+
+.cdb-search-clear:hover {
+	color: #4f46e5;
+}
+
 .cdb-featured-list {
 	list-style: none;
 	margin: 0;

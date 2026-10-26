@@ -196,9 +196,13 @@ class Catalogo_Distribuidor_Bridge_Store {
 				$vals[]  = $slugs[0];
 			}
 		}
-		if ( ! empty( $args['q'] ) ) {
-			$where[] = '(nombre LIKE %s OR sku LIKE %s)';
-			$like    = '%' . $wpdb->esc_like( $args['q'] ) . '%';
+		// Búsqueda por palabras: cada una debe aparecer (en cualquier orden) en
+		// el nombre, el SKU o el slug — "camisa pescadora" encuentra "Camisa
+		// Pescadora Manga Larga", y "camisa" sola trae todas las camisas.
+		foreach ( self::search_words( isset( $args['q'] ) ? $args['q'] : '' ) as $word ) {
+			$where[] = '(nombre LIKE %s OR sku LIKE %s OR slug LIKE %s)';
+			$like    = '%' . $wpdb->esc_like( $word ) . '%';
+			$vals[]  = $like;
 			$vals[]  = $like;
 			$vals[]  = $like;
 		}
@@ -231,6 +235,32 @@ class Catalogo_Distribuidor_Bridge_Store {
 			'pagination' => array( 'page' => $page, 'limit' => $limit, 'total' => $total, 'totalPages' => (int) ceil( $total / $limit ) ),
 			'message'    => '',
 		);
+	}
+
+	/**
+	 * Parte lo que tecleó el visitante en palabras sueltas para query().
+	 * Descarta conectores ("de", "para"...) que coinciden con casi todo, y
+	 * quita el plural ("camisas" → "camisa", "pantalones" → "pantalon") —
+	 * como se busca con LIKE '%palabra%', la forma recortada sigue
+	 * encontrando el singular. Máximo 6 palabras para no armar un WHERE
+	 * enorme con texto pegado.
+	 */
+	public static function search_words( $q ) {
+		$stop  = array( 'de', 'del', 'la', 'las', 'el', 'los', 'para', 'con', 'en', 'y', 'un', 'una' );
+		$words = preg_split( '/[\s,]+/u', strtolower( trim( (string) $q ) ), -1, PREG_SPLIT_NO_EMPTY );
+		$out   = array();
+		foreach ( $words as $word ) {
+			if ( mb_strlen( $word, 'UTF-8' ) < 2 || in_array( $word, $stop, true ) ) {
+				continue;
+			}
+			if ( mb_strlen( $word, 'UTF-8' ) > 5 && preg_match( '/[^aeiou]es$/u', $word ) ) {
+				$word = mb_substr( $word, 0, -2, 'UTF-8' );
+			} elseif ( mb_strlen( $word, 'UTF-8' ) > 3 && 's' === mb_substr( $word, -1, 1, 'UTF-8' ) ) {
+				$word = mb_substr( $word, 0, -1, 'UTF-8' );
+			}
+			$out[ $word ] = $word;
+		}
+		return array_slice( array_values( $out ), 0, 6 );
 	}
 
 	public static function get_by_slug( $slug ) {

@@ -13,6 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * "estilo" SÍ es decisión del distribuidor (no toca qué productos ve, solo
  * cómo se acomodan): cuadricula (por defecto), lista o compacta. No afecta
  * la llamada a la API ni su caché — solo cambia clases CSS en el render.
+ *
+ * Búsqueda: cualquier formulario GET que apunte a la página del catálogo
+ * con un campo name="cdb_buscar" filtra el grid por palabras (nombre, SKU
+ * o slug) — ver Catalogo_Distribuidor_Bridge_Store::search_words().
  */
 class Catalogo_Distribuidor_Bridge_Shortcodes {
 
@@ -46,6 +50,15 @@ class Catalogo_Distribuidor_Bridge_Shortcodes {
 		// fijarla — el visitante puede cambiar a otra, y "Quitar filtro" lleva a
 		// ?cdb_categoria=todas para ver todo el catálogo (sin ese valor especial,
 		// quitar el filtro volvería a caer en la categoría inicial).
+		//
+		// Búsqueda (?cdb_buscar=camisa+pescadora, p.ej. desde el buscador del
+		// header del sitio): no se llama "s" porque ese parámetro lo secuestra
+		// la búsqueda nativa de WordPress. Mientras hay búsqueda se ignora
+		// `categoria_inicial` — buscar desde el header debe abarcar todo el
+		// catálogo. Los resultados se paginan igual que el listado normal.
+		$busqueda = isset( $_GET['cdb_buscar'] ) ? sanitize_text_field( wp_unslash( $_GET['cdb_buscar'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$busqueda = mb_substr( $busqueda, 0, 100, 'UTF-8' );
+
 		$categoria_fija    = sanitize_title( $atts['categoria'] );
 		$categoria_inicial = sanitize_title( $atts['categoria_inicial'] );
 		$categoria_actual  = $categoria_fija;
@@ -55,7 +68,7 @@ class Catalogo_Distribuidor_Bridge_Shortcodes {
 				$categoria_actual = '';
 			} elseif ( '' !== $pedida ) {
 				$categoria_actual = $pedida;
-			} else {
+			} elseif ( '' === $busqueda ) {
 				$categoria_actual = $categoria_inicial;
 			}
 		}
@@ -70,6 +83,7 @@ class Catalogo_Distribuidor_Bridge_Shortcodes {
 		$args = array(
 			'brand'    => sanitize_title( $atts['marca'] ),
 			'category' => $categoria_actual,
+			'q'        => $busqueda,
 			'limit'    => max( 1, min( 100, (int) $atts['limite'] ) ),
 			'page'     => $pagina_actual,
 			// Orden manual (ej. orden="shell, atractive, hydro, reaction"): esos
