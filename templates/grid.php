@@ -23,6 +23,11 @@ $busqueda              = isset( $busqueda ) ? $busqueda : '';
 // hay más de una entre las que elegir — con una sola no hay nada que filtrar.
 $mostrar_filtro_categoria = empty( $categoria_fija_activa ) && count( $categorias ) > 1;
 
+// Elegir una categoría (o quitar el filtro) empieza de cero: vuelve a la
+// página 1 y suelta la búsqueda activa — si no, al buscar "camisa
+// pescadora" y luego dar clic en Camisas solo seguían saliendo esas dos.
+$quitar_al_filtrar = array( 'cdb_pagina', 'cdb_buscar', 'cab_buscar' );
+
 // Círculos de otras marcas/enlaces al final de la fila de categorías: se
 // administran en Ajustes → "Otras marcas / enlaces". Se ven igual que una
 // categoría, pero son enlaces externos, no filtros.
@@ -34,7 +39,7 @@ $marcas_extra = Catalogo_Distribuidor_Bridge_Settings::get_marcas_extra( true );
 			<h2 class="cdb-cats-title">Categorías</h2>
 			<div class="cdb-cats-row">
 				<?php foreach ( $categorias as $cat ) : ?>
-					<a class="cdb-cat-btn<?php echo ( $cat['slug'] === $categoria_actual ) ? ' active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'cdb_categoria', $cat['slug'], remove_query_arg( 'cdb_pagina' ) ) ); ?>">
+					<a class="cdb-cat-btn<?php echo ( $cat['slug'] === $categoria_actual ) ? ' active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'cdb_categoria', $cat['slug'], remove_query_arg( $quitar_al_filtrar ) ) ); ?>">
 						<span class="cdb-cat-btn-img">
 							<?php if ( $cat['imagen'] ) : ?>
 								<img src="<?php echo esc_url( $cat['imagen'] ); ?>" alt="<?php echo esc_attr( $cat['nombre'] ); ?>" loading="lazy" />
@@ -119,12 +124,12 @@ $marcas_extra = Catalogo_Distribuidor_Bridge_Settings::get_marcas_extra( true );
 					<div class="cdb-sidebar-block">
 						<h3 class="cdb-sidebar-title">Categorías del producto</h3>
 						<?php if ( $categoria_actual ) : ?>
-							<a class="cdb-cat-list-clear" href="<?php echo esc_url( ! empty( $categoria_inicial ) ? add_query_arg( 'cdb_categoria', 'todas', remove_query_arg( 'cdb_pagina' ) ) : remove_query_arg( array( 'cdb_categoria', 'cdb_pagina' ) ) ); ?>">Quitar filtro</a>
+							<a class="cdb-cat-list-clear" href="<?php echo esc_url( ! empty( $categoria_inicial ) ? add_query_arg( 'cdb_categoria', 'todas', remove_query_arg( $quitar_al_filtrar ) ) : remove_query_arg( array_merge( array( 'cdb_categoria' ), $quitar_al_filtrar ) ) ); ?>">Quitar filtro</a>
 						<?php endif; ?>
 						<ul class="cdb-cat-list">
 							<?php foreach ( $categorias as $cat ) : ?>
 								<li>
-									<a class="cdb-cat-list-link<?php echo ( $cat['slug'] === $categoria_actual ) ? ' active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'cdb_categoria', $cat['slug'], remove_query_arg( 'cdb_pagina' ) ) ); ?>">
+									<a class="cdb-cat-list-link<?php echo ( $cat['slug'] === $categoria_actual ) ? ' active' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'cdb_categoria', $cat['slug'], remove_query_arg( $quitar_al_filtrar ) ) ); ?>">
 										<span><?php echo esc_html( $cat['nombre'] ); ?></span>
 										<span class="cdb-cat-list-count"><?php echo (int) $cat['total']; ?></span>
 									</a>

@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.31.1
+Stable tag: 1.31.2
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -47,6 +47,9 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.31.2 =
+* Al dar clic en una categoría (botones, lista del aside o "Quitar filtro") se quita la búsqueda activa: antes, después de buscar "camisa pescadora", la categoría Camisas seguía mostrando solo esos resultados.
 
 = 1.31.1 =
 * Búsqueda: también coincide con la categoría ("camisa" trae todo lo de Camisas aunque el nombre no lo diga) y acepta el campo `cab_buscar` además de `cdb_buscar`, para que el mismo header sirva con cualquiera de los dos plugins.
