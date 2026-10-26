@@ -74,7 +74,7 @@ $marcas_extra = Catalogo_Distribuidor_Bridge_Settings::get_marcas_extra( true );
 						<?php endif; ?>
 						<strong>«<?php echo esc_html( $busqueda ); ?>»</strong>
 					</span>
-					<a class="cdb-search-clear" href="<?php echo esc_url( remove_query_arg( array( 'cdb_buscar', 'cdb_pagina' ) ) ); ?>">Quitar búsqueda</a>
+					<a class="cdb-search-clear" href="<?php echo esc_url( remove_query_arg( array( 'cdb_buscar', 'cab_buscar', 'cdb_pagina' ) ) ); ?>">Quitar búsqueda</a>
 				</div>
 			<?php endif; ?>
 
