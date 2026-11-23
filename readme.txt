@@ -4,7 +4,7 @@ Tags: catálogo, api, distribuidor, productos
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.31.2
+Stable tag: 1.32.0
 License: proprietary
 
 Consume el catálogo de un distribuidor autenticado con su API Key. Sin precios, con una base de datos local que se sincroniza al instante.
@@ -47,6 +47,9 @@ El plugin es un puente de datos (conexión a la API, autenticación, caché y si
    `
 
 == Changelog ==
+
+= 1.32.0 =
+* SEO de la ficha de producto: ahora imprime canonical, meta description (con el texto del producto), Open Graph/Twitter con la foto principal y un Schema `Product` (sin precio, los precios son privados). Si Yoast está activo, se silencian sus versiones en la ficha para no duplicar. El Schema se apaga con `add_filter( 'cdb_seo_product_schema', '__return_false' );`. Los productos inactivos o inexistentes siguen dando 404 y no llevan nada de esto.
 
 = 1.31.2 =
 * Al dar clic en una categoría (botones, lista del aside o "Quitar filtro") se quita la búsqueda activa: antes, después de buscar "camisa pescadora", la categoría Camisas seguía mostrando solo esos resultados.
