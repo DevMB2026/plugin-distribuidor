@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Catálogo Distribuidor Bridge
  * Description:       Consume el catálogo de un distribuidor autenticado con su API Key (sin precios). Guarda una base de datos local que se sincroniza al instante vía webhook.
- * Version:           1.32.0
+ * Version:           1.33.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            Prezenza
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Acceso directo no permitido.
 }
 
-define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_VERSION', '1.32.0' );
+define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_VERSION', '1.33.0' );
 define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CATALOGO_DISTRIBUIDOR_BRIDGE_URL', plugin_dir_url( __FILE__ ) );
 
@@ -25,6 +25,7 @@ require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-templates.php';
 require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-settings.php';
 require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-rewrite.php';
 require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-seo.php';
+require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-sitemap.php';
 require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-shortcodes.php';
 require_once CATALOGO_DISTRIBUIDOR_BRIDGE_DIR . 'includes/class-colors.php';
 
@@ -65,6 +66,7 @@ add_action(
 		Catalogo_Distribuidor_Bridge_Settings::init();
 		Catalogo_Distribuidor_Bridge_Rewrite::init();
 		Catalogo_Distribuidor_Bridge_Seo::init();
+		Catalogo_Distribuidor_Bridge_Sitemap::init();
 		Catalogo_Distribuidor_Bridge_Shortcodes::init();
 		Catalogo_Distribuidor_Bridge_Sync::init();
 	}

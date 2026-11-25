@@ -275,6 +275,25 @@ class Catalogo_Distribuidor_Bridge_Store {
 		return array( 'ok' => true, 'status' => 200, 'data' => json_decode( $row, true ), 'pagination' => null, 'message' => '' );
 	}
 
+	/**
+	 * Filas para el sitemap: productos ACTIVOS con slug (los inactivos dan 404
+	 * en la ficha). Devuelve array( array( 'slug', 'updated_at', 'image' ) ).
+	 */
+	public static function sitemap_rows() {
+		global $wpdb;
+		$results = $wpdb->get_results( "SELECT slug, updated_at, payload FROM " . self::table() . " WHERE activo = 1 AND slug <> '' ORDER BY slug ASC", ARRAY_A ); // phpcs:ignore
+		$rows    = array();
+		foreach ( (array) $results as $r ) {
+			$product = $r['payload'] ? json_decode( $r['payload'], true ) : array();
+			$rows[]  = array(
+				'slug'       => $r['slug'],
+				'updated_at' => $r['updated_at'],
+				'image'      => is_array( $product ) ? self::main_image( $product ) : '',
+			);
+		}
+		return $rows;
+	}
+
 	/** Primera imagen "principal" del producto (o la primera que haya) — misma regla que usan grid.php y product-card.php. */
 	public static function main_image( $product ) {
 		if ( empty( $product['media'] ) || ! is_array( $product['media'] ) ) {
